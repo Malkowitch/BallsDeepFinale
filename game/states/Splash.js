@@ -10,7 +10,6 @@ Splash.prototype = {
     game.load.script('stage1', 'states/Stage1.js');
     game.load.script('stage2', 'states/Stage2.js');
     game.load.script('stage3', 'states/Stage3.js');
-    //game.load.script('playGame', 'states/Game2.js');
     game.load.script('Over','states/gameover.js');
     game.load.script('credits', 'states/Credits.js');
     game.load.script('options', 'states/Options.js');
@@ -19,7 +18,6 @@ Splash.prototype = {
   loadBgm: function () {
     // Musik
     game.load.audio('dangerous', 'assets/bgm/love_muscle.mp3');
-    game.load.audio('exit', 'assets/bgm/love_muscle.mp3');
   },
 
   loadImages: function () {
@@ -69,7 +67,6 @@ Splash.prototype = {
     game.state.add("Stage1",Stage1);
     game.state.add("Stage2",Stage2);
     game.state.add("Stage3",Stage3);
-    //game.state.add("playGame", playGame)
     game.state.add("Credits",Credits);
     //game.state.add("Options",Options);
   },
@@ -82,8 +79,8 @@ Splash.prototype = {
 
   create: function() {
     this.status.setText('Ready!');
-    this.addGameStates();
     this.addGameMusic();
+    this.addGameStates();
 
     setTimeout(function () {
       game.state.start("GameMenu");

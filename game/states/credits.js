@@ -51,12 +51,10 @@ Credits.prototype = {
 
   create: function () {
     this.stage.disableVisibilityChange = true;
-    if (gameOptions.playMusic) {
-      musicPlayer.stop();
-      musicPlayer = game.add.audio('exit');
-      musicPlayer.play();
-    }
     var bg = game.add.sprite(0, 0, 'gameover-bg');
+    var grpText = game.add.text(game.world.centerX, game.world.centerY, "", { font: "32px TheMinion", fill: "#FFF", align: "center" });
+    grpText.anchor.setTo(0.5, 0.5);
+    grpText.text = "Created by:\n\r Group 10\n\r(Mum's basement)";
     this.addMenuOption('<- Back', function (e) {
       game.state.start("GameMenu");
     });

@@ -1,17 +1,17 @@
-// the ball you are about to fire
-var ball;
+// the ball3 you are about to fire
+var ball3;
 
-// the rectangle where you can place the ball and charge the launch power
+// the rectangle where you can place the ball3 and charge the launch power
 var launchRectangle = new Phaser.Rectangle(50, 360, 200, 150);
 
 // here we will draw the predictive trajectory
-var trajectoryGraphics;
+var trajectoryGraphics3;
 
 // a simply multiplier to increase launch power
 var forceMult = 5;
 
 // here we will store the launch velocity
-var launchVelocity;
+var launchVelocity3;
 
 // this is the compound object which will represent the crate
 var crateBody;
@@ -31,14 +31,15 @@ var sound;
 var shotsText;
 
 var statusText;
+var bounces3;
 
 var Stage3 = function(game){};
 
 Stage3.prototype = {
-     // preloading graphic assets (only the ball)
+     // preloading graphic assets (only the ball3)
   preload: function(){
         game.load.image("background", "images/background.png");
-        game.load.image("ball", "images/ball.png");
+        game.load.image("ball3", "images/ball.png");
         game.load.image("pole", "images/ShapedPole.png")
         game.load.audio("noProblem", "audio/noproblem.mp3");
         game.load.audio("laugh", "audio/laugh.mp3");
@@ -55,9 +56,9 @@ Stage3.prototype = {
           launchGraphics.lineStyle(5, 0x551A8B);
           launchGraphics.drawRect(launchRectangle.x, launchRectangle.y, launchRectangle.width, launchRectangle.height);
           // also adding the graphics where we'll draw the trajectory
-          trajectoryGraphics = game.add.graphics(0, 0);
+          trajectoryGraphics3 = game.add.graphics(0, 0);
           // setting initial launch velocity to zero
-          launchVelocity = new Phaser.Point(0, 0);
+          launchVelocity3 = new Phaser.Point(0, 0);
           // changing game background to dark grey
           game.stage.backgroundColor = "#222222";
           // initializing Box2D physics
@@ -65,8 +66,8 @@ Stage3.prototype = {
           game.physics.box2d.setBoundsToWorld();
           // setting gravity
           game.physics.box2d.gravity.y = 500;
-          // waiting for player input then call placeBall function
-          game.input.onDown.add(placeBall);
+          // waiting for player input then call placeball3 function
+          game.input.onDown.add(placeball3);
           // this is how we build the crate as a compound body
           // it's a kinematic body so it will act as a static body, but it will also react to forces
           crateBody = new Phaser.Physics.Box2D.Body(game, null, 500, 440, 1);
@@ -76,7 +77,7 @@ Stage3.prototype = {
           crateBody.addRectangle(10, 110, -55, -60);
           crateBody.addRectangle(10, 110, 55, -60);
           crateBody.m_userData = "outside";
-          // inside the crate we also place a sensor to check if the ball is inside the crate
+          // inside the crate we also place a sensor to check if the ball3 is inside the crate
           var sensor = crateBody.addRectangle(100, 70, 0, -40);
           sensor.m_isSensor = true;
           // adding custom user data to give crate sensor a name
@@ -94,7 +95,6 @@ Stage3.prototype = {
           shotsText = game.add.text(16, 16, 'Shots: ' + shots, { font: "24px arial", fill: "#fff" });
           statusText = game.add.text(game.world.centerX, game.world.centerY, "", { font: "32px arial", fill: "#ff69b4", align: "center" });
           statusText.anchor.setTo(0.5, 0.5);
-          var bounces;
 
      },
      render: function(){
@@ -132,98 +132,98 @@ Stage3.prototype = {
        }
      }
 };
-// this function will place the ball
-function placeBall(e){
+// this function will place the ball3
+function placeball3(e){
   if (!shotActive) {
 
-     // we place a new ball only if we are inside launch rectangle
+     // we place a new ball3 only if we are inside launch rectangle
      if(launchRectangle.contains(e.x, e.y)){
-          // adding ball sprite
-          ball = game.add.sprite(e.x, e.y, "ball");
-          // enabling physics to ball sprite
-          game.physics.box2d.enable(ball);
-          // temporarily set ball gravity to zero, so it won't fall down
-          ball.body.gravityScale = 0;
+          // adding ball3 sprite
+          ball3 = game.add.sprite(e.x, e.y, "ball3");
+          // enabling physics to ball3 sprite
+          game.physics.box2d.enable(ball3);
+          // temporarily set ball3 gravity to zero, so it won't fall down
+          ball3.body.gravityScale = 0;
           // telling Box2D we are dealing with a circle shape
-          ball.body.setCircle(ball.width / 2);
-          ball.body.restitution = 0.98;
+          ball3.body.setCircle(ball3.width / 2);
+          ball3.body.restitution = 0.98;
           // removing onDown listener
-          game.input.onDown.remove(placeBall);
-          // when the player ends the input call launchBall function
-          game.input.onUp.add(launchBall);
-          // when the player moves the input call chargeBall
-          game.input.addMoveCallback(chargeBall);
+          game.input.onDown.remove(placeball3);
+          // when the player ends the input call launchball3 function
+          game.input.onUp.add(launchball3);
+          // when the player moves the input call chargeball3
+          game.input.addMoveCallback(chargeball3);
      }
   }
 }
-// this function will allow the player to charge the ball before the launch, and it's the core of the example
-function chargeBall(pointer, x, y, down){
+// this function will allow the player to charge the ball3 before the launch, and it's the core of the example
+function chargeball3(pointer, x, y, down){
      // we does not allow multitouch, so we are only handling pointer which id is zero
      if(pointer.id == 0){
-          // clearing trajectory graphics, setting its line style and move the pen on ball position
-          trajectoryGraphics.clear();
-          trajectoryGraphics.lineStyle(3, 0xff00ff);
-          trajectoryGraphics.moveTo(ball.x, ball.y);
+          // clearing trajectory graphics, setting its line style and move the pen on ball3 position
+          trajectoryGraphics3.clear();
+          trajectoryGraphics3.lineStyle(3, 0xff00ff);
+          trajectoryGraphics3.moveTo(ball3.x, ball3.y);
           // now we have two options: the pointer is inside the launch rectangle...
           if(launchRectangle.contains(x, y)){
                // ... and in this case we simply draw a line to pointer position
-               trajectoryGraphics.lineTo(x, y);
-               launchVelocity.x = ball.x - x;
-               launchVelocity.y = ball.y - y;
+               trajectoryGraphics3.lineTo(x, y);
+               launchVelocity3.x = ball3.x - x;
+               launchVelocity3.y = ball3.y - y;
           }
           // ... but the pointer cal also be OUTSIDE launch rectangle
           else{
                // ... in this case we have to check for the intersection between launch line and launch rectangle
-               var intersection = lineIntersectsRectangle(new Phaser.Line(x, y, ball.x, ball.y), launchRectangle);
-               trajectoryGraphics.lineTo(intersection.x, intersection.y);
-               launchVelocity.x = ball.x - intersection.x;
-               launchVelocity.y = ball.y - intersection.y;
+               var intersection = lineIntersectsRectangle(new Phaser.Line(x, y, ball3.x, ball3.y), launchRectangle);
+               trajectoryGraphics3.lineTo(intersection.x, intersection.y);
+               launchVelocity3.x = ball3.x - intersection.x;
+               launchVelocity3.y = ball3.y - intersection.y;
           }
           // now it's time to draw the predictive trajectory
-          trajectoryGraphics.lineStyle(1, 0x00ffff);
-          launchVelocity.multiply(forceMult, forceMult);
+          trajectoryGraphics3.lineStyle(1, 0x00ffff);
+          launchVelocity3.multiply(forceMult, forceMult);
           for (var i = 0; i < 30; i += 6){
-               var trajectoryPoint = getTrajectoryPoint(ball.x, ball.y, launchVelocity.x, launchVelocity.y, i);
-               trajectoryGraphics.moveTo(trajectoryPoint.x - 3, trajectoryPoint.y - 3);
-               trajectoryGraphics.lineTo(trajectoryPoint.x + 3, trajectoryPoint.y + 3);
-               trajectoryGraphics.moveTo(trajectoryPoint.x - 3, trajectoryPoint.y + 3);
-               trajectoryGraphics.lineTo(trajectoryPoint.x + 3, trajectoryPoint.y - 3);
+               var trajectoryPoint3 = gettrajectoryPoint3(ball3.x, ball3.y, launchVelocity3.x, launchVelocity3.y, i);
+               trajectoryGraphics3.moveTo(trajectoryPoint3.x - 3, trajectoryPoint3.y - 3);
+               trajectoryGraphics3.lineTo(trajectoryPoint3.x + 3, trajectoryPoint3.y + 3);
+               trajectoryGraphics3.moveTo(trajectoryPoint3.x - 3, trajectoryPoint3.y + 3);
+               trajectoryGraphics3.lineTo(trajectoryPoint3.x + 3, trajectoryPoint3.y - 3);
           }
      }
 }
 
-// function to launch the ball
-function launchBall(){
+// function to launch the ball3
+function launchball3(){
 
-     bounces = 10;
+     bounces3 = 10;
      // adjusting callbacks
      game.input.deleteMoveCallback(0);
-     game.input.onUp.remove(launchBall);
-     game.input.onDown.add(placeBall);
-     // setting ball velocity
-     ball.body.velocity.x = launchVelocity.x;
-     ball.body.velocity.y = launchVelocity.y;
-     // applying the gravity to the ball
-     ball.body.gravityScale = 1;
-     // ball collision listener callback
-     ball.body.setCategoryContactCallback(2, ballHitsCrate);
+     game.input.onUp.remove(launchball3);
+     game.input.onDown.add(placeball3);
+     // setting ball3 velocity
+     ball3.body.velocity.x = launchVelocity3.x;
+     ball3.body.velocity.y = launchVelocity3.y;
+     // applying the gravity to the ball3
+     ball3.body.gravityScale = 1;
+     // ball3 collision listener callback
+     ball3.body.setCategoryContactCallback(2, ball3HitsCrate);
      //Adds lives to bouncing
-     ball.body.setCategoryContactCallback(1, hitCollision);
+     ball3.body.setCategoryContactCallback(1, hitCollision3);
      shotActive = true;
 
 }
 
 //Adds lives to bouncing
-function hitCollision(body1, body2, fixture1, fixture2, begin) {
+function hitCollision3(body1, body2, fixture1, fixture2, begin) {
 
 
   if (!begin) {
     return;
   }
-      bounces--;
-       console.log("bounces left: " + bounces);
+      bounces3--;
+       console.log("bounces3 left: " + bounces3);
 
-   if (bounces < 1) {
+   if (bounces3 < 1) {
       body1.sprite.destroy();
 
       shotActive = false;
@@ -253,16 +253,16 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// function to be executed when the ball hits the crate
-function ballHitsCrate(body1, body2, fixture1, fixture2, begin){
+// function to be executed when the ball3 hits the crate
+function ball3HitsCrate(body1, body2, fixture1, fixture2, begin){
      // we only want this to happen when the hit begins
      if(begin){
-          // if the ball hits the sensor inside...
+          // if the ball3 hits the sensor inside...
           if(fixture2.m_userData == "inside"){
-               // setting restitution to zero to prevent the ball to jump off the box, but it's just a "hey I got the collision" test
+               // setting restitution to zero to prevent the ball3 to jump off the box, but it's just a "hey I got the collision" test
                body1.restitution = 0;
-               // now the ball looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
-               body1.setCategoryContactCallback(4, ballHitsCrate);
+               // now the ball3 looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
+               body1.setCategoryContactCallback(4, ball3HitsCrate);
                console.log("Game won");
                 //game.state.start("Over");
             sound = game.add.audio('win');
@@ -281,7 +281,7 @@ function lineIntersectsRectangle(l, r){
 }
 
 // function to calculate the trajectory point taken from http://phaser.io/examples/v2/box2d/projected-trajectory
-function getTrajectoryPoint(startX, startY, velocityX, velocityY, n) {
+function gettrajectoryPoint3(startX, startY, velocityX, velocityY, n) {
      var t = 1 / 60;
      var stepVelocityX = t * game.physics.box2d.pxm(-velocityX);
      var stepVelocityY = t * game.physics.box2d.pxm(-velocityY);

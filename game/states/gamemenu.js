@@ -4,7 +4,7 @@ var GameMenu = function() {};
 GameMenu.prototype = {
 
   menuConfig: {
-    startY: 260,
+    startY: 200,
     startX: 330
   },
 
@@ -42,10 +42,10 @@ GameMenu.prototype = {
     });
     /*this.addMenuOption('Options', function () {
       game.state.start("Options");
-    });
+    });*/
     this.addMenuOption('Credits', function () {
       game.state.start("Credits");
-    });*/
+    });
   }
 };
 
