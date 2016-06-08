@@ -23,13 +23,14 @@ var barBody;
 
 var shots =  3;
 
-var bounces = 3;
 
 var shotActive = false;
 
 var sound;
 
 var shotsText;
+
+var statusText;
 
 var Stage3 = function(game){};
 
@@ -38,10 +39,11 @@ Stage3.prototype = {
   preload: function(){
         game.load.image("background", "images/background.png");
         game.load.image("ball", "images/ball.png");
-        game.load.image("pole", "images/pole.png")
+        game.load.image("pole", "images/ShapedPole.png")
         game.load.audio("noProblem", "audio/noproblem.mp3");
         game.load.audio("laugh", "audio/laugh.mp3");
         game.load.audio("lucky", "audio/lucky.mp3");
+        game.load.audio("win", "audio/ohhyea.mp3");
         game.load.audio("gig", "audio/gig.mp3");
   },
      // function to be executed onche game has been created
@@ -50,7 +52,7 @@ Stage3.prototype = {
           background = game.add.tileSprite(0, 0, 800, 600, "background");
           // adding a new graphics and drawing the launch rectangle in it
           var launchGraphics = game.add.graphics(0, 0);
-          launchGraphics.lineStyle(5, 0xff0000);
+          launchGraphics.lineStyle(5, 0x551A8B);
           launchGraphics.drawRect(launchRectangle.x, launchRectangle.y, launchRectangle.width, launchRectangle.height);
           // also adding the graphics where we'll draw the trajectory
           trajectoryGraphics = game.add.graphics(0, 0);
@@ -86,10 +88,14 @@ Stage3.prototype = {
           // also placing a static object to make the game a little harder
           barBody = new Phaser.Physics.Box2D.Body(game, null, 350, 150, 1);
           barBody.setRectangle(10, 150, 0, 0);
-          barBody.color = 0x00ffff;
+          // barBody.color = 0x00ffff;
           barBody.velocity.y = (crateSpeed * 2);
           barBody.setCollisionCategory(2);
           shotsText = game.add.text(16, 16, 'Shots: ' + shots, { font: "24px arial", fill: "#fff" });
+          statusText = game.add.text(game.world.centerX, game.world.centerY, "", { font: "32px arial", fill: "#ff69b4", align: "center" });
+          statusText.anchor.setTo(0.5, 0.5);
+          var bounces;
+
      },
      render: function(){
           // this is the debug draw in action
@@ -113,8 +119,12 @@ Stage3.prototype = {
             barBody.velocity.y = (crateSpeed * 2);
           }
           if (shots === 0) {
-          game.state.start("Over");
+          //game.state.start("Over");
+          //alert("Game over!");
+          statusText.text = "Game Over!";
+          //game.destroy();
             console.log("you dead!!");
+          //  console.log("you dead!!");
           }
      },
      balldie: function(){
@@ -185,14 +195,14 @@ function chargeBall(pointer, x, y, down){
 // function to launch the ball
 function launchBall(){
 
-     bounces = 3;
+     bounces = 10;
      // adjusting callbacks
      game.input.deleteMoveCallback(0);
      game.input.onUp.remove(launchBall);
      game.input.onDown.add(placeBall);
      // setting ball velocity
-     ball.body.velocity.x = launchVelocity.x * 2;
-     ball.body.velocity.y = launchVelocity.y * 2;
+     ball.body.velocity.x = launchVelocity.x;
+     ball.body.velocity.y = launchVelocity.y;
      // applying the gravity to the ball
      ball.body.gravityScale = 1;
      // ball collision listener callback
@@ -254,8 +264,8 @@ function ballHitsCrate(body1, body2, fixture1, fixture2, begin){
                // now the ball looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
                body1.setCategoryContactCallback(4, ballHitsCrate);
                console.log("Game won");
-                game.state.start("GameOver");
-            sound = game.add.audio('lucky');
+                //game.state.start("Over");
+            sound = game.add.audio('win');
             sound.play();
 
           }

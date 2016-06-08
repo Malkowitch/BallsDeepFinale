@@ -26,11 +26,12 @@ var barBody2Speed = 160;
 
 var shots = 3;
 
-var bounces = 3;
+// var bounces;
 
 var shotActive = false;
 
 var shotsText;
+var statusText;
 
 var Stage1 = function(game){};
 
@@ -44,6 +45,7 @@ Stage1.prototype = {
         game.load.audio("laugh", "audio/laugh.mp3");
         game.load.audio("lucky", "audio/lucky.mp3");
         game.load.audio("gig", "audio/gig.mp3");
+        game.load.audio("win", "audio/ohhyea.mp3");
 
 	},
      // function to be executed onche game has been created
@@ -52,7 +54,7 @@ Stage1.prototype = {
         background = game.add.tileSprite(0, 0, 800, 600, "background");
           // adding a new graphics and drawing the launch rectangle in it
           var launchGraphics = game.add.graphics(0, 0);
-          launchGraphics.lineStyle(5, 0xffffff);
+          launchGraphics.lineStyle(5, 0x551A8B);
           launchGraphics.drawRect(launchRectangle.x, launchRectangle.y, launchRectangle.width, launchRectangle.height);
           // also adding the graphics where we'll draw the trajectory
           trajectoryGraphics = game.add.graphics(0, 0);
@@ -98,6 +100,8 @@ Stage1.prototype = {
           barBody2.setRectangle(140, 50, 0, 0);
 
           shotsText = game.add.text(30, 30, 'Shots: 3', { fontSize: '32px', fill: '#fff' });
+          statusText = game.add.text(game.world.centerX, game.world.centerY, "", { font: "32px arial", fill: "#ff69b4", align: "center" });
+          statusText.anchor.setTo(0.5, 0.5);
 
 	},
      render: function(){
@@ -114,9 +118,14 @@ Stage1.prototype = {
                crateBody.velocity.x = crateSpeed;
           }
           if (shots == 0) {
-            document.getElementById("lblStatus").value = "Game lost";
-            game.destroy();
-            game.state.start("GameOver", GameOver);
+            // game.destroy();
+            //game.state.start("GameOver", GameOver);
+            //game.state.start("Over");
+            //alert("Game over!");
+            statusText.text = "Game Over!";
+            //game.destroy();
+              console.log("you dead!!");
+            //  console.log("you dead!!");
           }
 
 

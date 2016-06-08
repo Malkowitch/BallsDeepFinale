@@ -36,6 +36,17 @@ var wallSpeed = 100;
 
 var sound;
 
+var shots =  3;
+
+// var bounces;
+
+var shotActive = false;
+
+var sound;
+
+var shotsText;
+var statusText;
+
 var Stage2 = function(game) {};
 
 Stage2.prototype = {
@@ -46,6 +57,8 @@ Stage2.prototype = {
         game.load.audio("noProblem", "audio/noproblem.mp3");
         game.load.audio("laugh", "audio/laugh.mp3");
         game.load.audio("lucky", "audio/lucky.mp3");
+        game.load.audio("gig", "audio/gig.mp3");
+        game.load.audio("win", "audio/ohhyea.mp3");
 
     },
     // Function to be executed once the game has been created
@@ -55,7 +68,7 @@ Stage2.prototype = {
 
         // Adding a new graphics and drawing the launch rectangle in it
         var launchGraphics = game.add.graphics(0, 0);
-        launchGraphics.lineStyle(3, 0x00ff00);
+        launchGraphics.lineStyle(3, 0x551A8B);
         launchGraphics.drawRect(launchRectangle.x, launchRectangle.y, launchRectangle.width, launchRectangle.height);
 
         // Also adding the graphics where we'll draw the trajectory
@@ -144,6 +157,11 @@ Stage2.prototype = {
         // Setting bucket horizontal velocity
         bucketBody.velocity.x = bucketSpeed;
 
+        shotsText = game.add.text(16, 16, 'Shots: ' + shots, { font: "24px arial", fill: "#fff" });
+        statusText = game.add.text(game.world.centerX, game.world.centerY, "", { font: "32px arial", fill: "#ff69b4", align: "center" });
+        statusText.anchor.setTo(0.5, 0.5);
+        var bounces;
+
     },
     render: function() {
         // This is the debug draw in action
@@ -165,11 +183,21 @@ Stage2.prototype = {
         if (movingWall.y < 70) {
             movingWall.velocity.y = wallSpeed;
         }
+        if (shots === 0) {
+        //game.state.start("Over");
+        //game.state.start("Over");
+        //alert("Game over!");
+        statusText.text = "Game Over!";
+        //game.destroy();
+          console.log("you dead!!");
+        //  console.log("you dead!!");
+        }
     }
 };
 
 // This function will place the ball
 function placeBall(e) {
+  if (!shotActive) {
     // We place a new ball only if we are inside launch rectangle
     if (launchRectangle.contains(e.x, e.y)) {
         // Adding ball sprite
@@ -188,6 +216,7 @@ function placeBall(e) {
         // When the player moves the input call chargeBall
         game.input.addMoveCallback(chargeBall);
     }
+  }
 }
 
 // This function will allow the player to charge the ball before the launch, and it's the core of the example
@@ -228,6 +257,7 @@ function chargeBall(pointer, x, y, down) {
 
 // Function to launch the ball
 function launchBall() {
+     bounces = 6;
     // Adjusting callbacks
     game.input.deleteMoveCallback(0);
     game.input.onUp.remove(launchBall);
@@ -239,8 +269,50 @@ function launchBall() {
     ball.body.gravityScale = 1;
     // Ball collision listener callback
     ball.body.setCategoryContactCallback(2, ballHitsBucket);
+    //Adds lives to bouncing
+    ball.body.setCategoryContactCallback(1, hitCollision);
+    shotActive = true;
 }
 
+//Adds lives to bouncing
+function hitCollision(body1, body2, fixture1, fixture2, begin) {
+
+
+  if (!begin) {
+    return;
+  }
+      bounces--;
+       console.log("bounces left: " + bounces);
+
+   if (bounces < 1) {
+      body1.sprite.destroy();
+
+      shotActive = false;
+      shots--;
+
+      shotsText.text = 'Shots: ' + shots;
+
+      var num = getRandomInt(1,3);
+      switch (num) {
+        case 1:
+              sound = game.add.audio("gig");
+        break;
+          case 2:
+                sound = game.add.audio("laugh");
+                      sound.volume = 20;
+          break;
+        default:
+              sound = game.add.audio("noProblem");
+        break;
+
+      }
+      sound.play();
+
+   }
+}
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 // Function to be executed when the ball hits the bucket
 function ballHitsBucket(body1, body2, fixture1, fixture2, begin) {
     // Body1 is the ship because it's the body that owns the callback
@@ -249,29 +321,26 @@ function ballHitsBucket(body1, body2, fixture1, fixture2, begin) {
     // Fixture2 is the fixture of body2 that was touched
 
     // We only want this to happen when the hit begins
-    if (begin) {
-        // If the ball hits the sensor inside...
-        if (fixture2.m_userData == "inside") {
-            // Setting restitution to zero to prevent the ball to jump off the box, but it's just a "hey I got the collision" test
-            body1.restitution = 0;
-            // Now the ball looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
-            body1.setCategoryContactCallback(4, ballHitsBucket);
-            sound = game.add.audio('lucky');
-            sound.play();
-        }
-        // If the ball hits the ground collision, destroy it.
-        if (fixture2.m_userData == "die") {
-            body1.sprite.destroy();
-            sound = game.add.audio("noProblem");
-            sound.play();
-        }
-        // if (fixture1.m_userData == "die") {
-        //     body2.sprite.destroy();
-        //     sound = game.add.audio("lucky");
-        //     sound.play();
-        // }
+    if(begin){
+         // if the ball hits the sensor inside...
+         if(fixture2.m_userData == "inside"){
+              // setting restitution to zero to prevent the ball to jump off the box, but it's just a "hey I got the collision" test
+              body1.restitution = 0;
+              // now the ball looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
+              body1.setCategoryContactCallback(4, ballHitsCrate);
+              console.log("Game won");
+               game.state.start("Over");
+           sound = game.add.audio('win');
+           sound.play();
+
+         }
+             if (fixture1.m_userData == "die") {
+                 body2.sprite.destroy();
+                 sound = game.add.audio("lucky");
+                 sound.play();
+             }
     }
-}
+    }
 
 // Function to check for intersection between a segment and a rectangle
 function lineIntersectsRectangle(l, r) {
