@@ -46,6 +46,7 @@ Stage1.prototype = {
         game.load.audio("lucky", "audio/lucky.mp3");
         game.load.audio("gig", "audio/gig.mp3");
         game.load.audio("win", "audio/ohhyea.mp3");
+        game.load.audio("gameover", "audio/gameover.mp3");
 
 	},
      // function to be executed onche game has been created
@@ -118,18 +119,6 @@ Stage1.prototype = {
           if(crateBody.x < 500){
                crateBody.velocity.x = crateSpeed;
           }
-          if (shots == 0) {
-            // game.destroy();
-            //game.state.start("GameOver", GameOver);
-            //game.state.start("Over");
-            //alert("Game over!");
-            statusText.text = "Game Over!";
-            //game.destroy();
-              console.log("you dead!!");
-            //  console.log("you dead!!");
-          }
-
-
      }
 
 }
@@ -224,6 +213,13 @@ function ball1HitsCrate(body1, body2, fixture1, fixture2, begin){
                body1.restitution = 0;
                // now the ball1 looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
                body1.setCategoryContactCallback(4, ball1HitsCrate);
+               bounces1 = 1000;
+               shotActive = true;
+               console.log("Game won");
+               statusText.text = "You won Creampie!";
+							    //  setTimeout(function () {
+							    //    game.state.start("Stage2");
+							    //  }, 2000);
                sound = game.add.audio('lucky');
             sound.play();
           }
@@ -270,25 +266,39 @@ function hitCollision1(body1, body2, fixture1, fixture2, begin) {
        console.log("bounces left: " + bounces1);
 
    if (bounces1 < 1) {
-      body1.sprite.destroy();
-      shotActive = false;
-      shots--;
-      shotsText.text = 'Shots: ' + shots;
-      var num = getRandomInt(1,3);
-      switch (num) {
-        case 1:
-              sound = game.add.audio("gig");
-        break;
-          case 2:
-                sound = game.add.audio("laugh");
-                      sound.volume = 20;
-          break;
-        default:
-              sound = game.add.audio("noProblem");
-        break;
+		 body1.sprite.destroy();
 
-      }
-      sound.play();
+ 		shotActive = false;
+ 		shots--;
+
+ 		shotsText.text = 'Shots: ' + shots;
+
+ 		var num = getRandomInt(1,3);
+ 		if (shots === 0) {
+ 			// game.state.start("Over");
+ 			sound = game.add.audio("gameover");
+ 			sound.play();
+ 			shotActive = true;
+ 		statusText.text = "Game Over!";
+ 			console.log("you dead!!");
+ 		}
+ 		else {
+ 		switch (num) {
+ 			case 1:
+ 						sound = game.add.audio("gig");
+ 			break;
+ 				case 2:
+ 							sound = game.add.audio("laugh");
+ 										sound.volume = 20;
+ 				break;
+ 			default:
+ 						sound = game.add.audio("noProblem");
+ 			break;
+
+ 			}
+ 		sound.play();
+
+ 		}
 
    }
 }

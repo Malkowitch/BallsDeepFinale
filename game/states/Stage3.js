@@ -46,6 +46,8 @@ Stage3.prototype = {
         game.load.audio("lucky", "audio/lucky.mp3");
         game.load.audio("win", "audio/ohhyea.mp3");
         game.load.audio("gig", "audio/gig.mp3");
+        game.load.audio("yeahbaby", "audio/yeahbaby.mp3");
+        game.load.audio("gameover", "audio/gameover.mp3");
   },
      // function to be executed onche game has been created
     create: function(){
@@ -118,14 +120,6 @@ Stage3.prototype = {
           if (barBody.y < 150) {
             barBody.velocity.y = (crateSpeed * 2);
           }
-          // if (shots === 0) {
-          // //game.state.start("Over");
-          // //alert("Game over!");
-          // statusText.text = "Game Over!";
-          // //game.destroy();
-          //   console.log("you dead!!");
-          // //  console.log("you dead!!");
-          // }
      },
      balldie: function(){
        if (shots===0) {
@@ -232,11 +226,10 @@ function hitCollision3(body1, body2, fixture1, fixture2, begin) {
       shotsText.text = 'Shots: ' + shots;
 
       var num = getRandomInt(1,3);
-
-      }
-      sound.play();
       if (shots === 0) {
         // game.state.start("Over");
+        sound = game.add.audio("gameover");
+        sound.play();
         shotActive = true;
       statusText.text = "Game Over!";
         console.log("you dead!!");
@@ -254,9 +247,12 @@ function hitCollision3(body1, body2, fixture1, fixture2, begin) {
               sound = game.add.audio("noProblem");
         break;
 
+        }
+      sound.play();
+
       }
 
-   }
+      }
 }
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -275,6 +271,7 @@ function ball3HitsCrate(body1, body2, fixture1, fixture2, begin){
                bounces3 = 1000;
                shotActive = true;
                console.log("Game won");
+               statusText.text = "Yeeeeeahhhh you won the game!";
                 //game.state.start("Over");
             sound = game.add.audio('win');
             sound.play();
