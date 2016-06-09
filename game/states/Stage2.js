@@ -45,6 +45,7 @@ var shotActive = false;
 var sound;
 
 var shotsText;
+
 var statusText;
 
 var Stage2 = function(game) {};
@@ -59,7 +60,8 @@ Stage2.prototype = {
         game.load.audio("lucky", "audio/lucky.mp3");
         game.load.audio("gig", "audio/gig.mp3");
         game.load.audio("win", "audio/ohhyea.mp3");
-
+        game.load.audio("yeahbaby", "audio/yeahbaby.mp3");
+        game.load.audio("gameover", "audio/gameover.mp3");
     },
     // Function to be executed once the game has been created
     create: function() {
@@ -67,9 +69,9 @@ Stage2.prototype = {
         background = game.add.tileSprite(0, 0, 800, 600, "background");
 
         // Adding a new graphics and drawing the launch rectangle in it
-        var launchGraphics = game.add.graphics(0, 0);
-        launchGraphics.lineStyle(3, 0x551A8B);
-        launchGraphics.drawRect(launchRectangle.x, launchRectangle.y, launchRectangle.width, launchRectangle.height);
+        var launchGraphics2 = game.add.graphics(0, 0);
+        launchGraphics2.lineStyle(3, 0x551A8B);
+        launchGraphics2.drawRect(launchRectangle.x, launchRectangle.y, launchRectangle.width, launchRectangle.height);
 
         // Also adding the graphics where we'll draw the trajectory
         trajectoryGraphics2 = game.add.graphics(0, 0);
@@ -143,13 +145,13 @@ Stage2.prototype = {
         // var planky = game.add.sprite(375, 110, plank);
 
         // Deadzone for the ball2 to be destroyed on collision
-        // deadZone = new Phaser.Physics.Box2D.Body(game, null, 400, 600, 1);
-        //
-        // var destroy = deadZone.addRectangle(800, 1, 0, 0);
-        // // Telling the object to kill the ball2 when it hits the object
-        // destroy.m_userData = "die";
-				// // Links the collision so the collision kills the ball2
-				// deadZone.setCollisionCategory(4);
+        deadZone = new Phaser.Physics.Box2D.Body(game, null, 400, 600, 4);
+
+        var terminate = deadZone.addRectangle(800, 3, 0, 0);
+        // Telling the object to kill ball2 when it hits the object
+        terminate.m_userData = "die";
+				// Links the collision so the collision kills the ball2
+				deadZone.setCollisionCategory(4);
 
         // A sensor to detect if the ball2 is inside the bucket
         var sensor = bucketBody.addRectangle(100, 70, 0, -40);
@@ -186,15 +188,16 @@ Stage2.prototype = {
         if (movingWall.y < 70) {
             movingWall.velocity.y = wallSpeed;
         }
-        if (shots === 0) {
-        //game.state.start("Over");
-        //game.state.start("Over");
-        //alert("Game over!");
-        statusText.text = "Game Over!";
-        //game.destroy();
-          console.log("you dead!!");
-        //  console.log("you dead!!");
-        }
+        // if (shots === 0) {
+        //   // game.state.start("Over");
+        //   // alert("Game over!");
+        //   statusText.text = "Game Over, Man!";
+        //   // game.destroy();
+        //   console.log("You failed!");
+        //   shotActive = true;
+        //   sound = game.add.audio("gameover");
+        //   // sound.play();
+        // }
     }
 };
 
@@ -260,7 +263,8 @@ function chargeball2(pointer, x, y, down) {
 
 // Function to launch the ball2
 function launchball2() {
-     bounces2 = 6;
+    // Sets the amount of bounces allowed before the ball is terminated
+    bounces2 = 6;
     // Adjusting callbacks
     game.input.deleteMoveCallback(0);
     game.input.onUp.remove(launchball2);
@@ -272,12 +276,12 @@ function launchball2() {
     ball2.body.gravityScale = 1;
     // ball2 collision listener callback
     ball2.body.setCategoryContactCallback(2, ball2HitsBucket);
-    //Adds lives to bouncing
+    // Adds lives to bouncing
     ball2.body.setCategoryContactCallback(1, hitCollision2);
     shotActive = true;
 }
 
-//Adds lives to bouncing
+// Adds lives to bouncing
 function hitCollision2(body1, body2, fixture1, fixture2, begin) {
 
 
@@ -302,14 +306,21 @@ function hitCollision2(body1, body2, fixture1, fixture2, begin) {
         break;
           case 2:
                 sound = game.add.audio("laugh");
-                      sound.volume = 20;
+                sound.volume = 20;
           break;
         default:
               sound = game.add.audio("noProblem");
         break;
 
       }
-      sound.play();
+      // sound.play();
+      if (shots === 0) {
+        sound = game.add.audio("gameover");
+        sound.play();
+        statusText.text = "Game Over, Man!";
+        shotActive = true;
+        console.log("Game Over, Man!");
+      }
 
    }
 }
@@ -327,24 +338,25 @@ function ball2HitsBucket(body1, body2, fixture1, fixture2, begin) {
     if(begin){
          // if the ball2 hits the sensor inside...
          if(fixture2.m_userData == "inside"){
-              // setting restitution to zero to prevent the ball2 to jump off the box, but it's just a "hey I got the collision" test
-              body1.restitution = 0;
-              // now the ball2 looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
-              body1.setCategoryContactCallback(4, ball2HitsCrate);
-              console.log("Game won");
-               game.state.start("Over");
-           sound = game.add.audio('win');
-           sound.play();
-
+          // setting restitution to zero to prevent the ball2 to jump off the box, but it's just a "hey I got the collision" test
+          body1.restitution = 0;
+          // now the ball2 looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
+          body1.setCategoryContactCallback(4, ball2HitsBucket);
+          console.log("Level completed!");
+          bounces2 = 200;
+          statusText.text = "Yeah baby, Yeah!";
+          shotActive = true;
+          sound = game.add.audio("yeahbaby");
+          sound.play();
          }
-            //  if (fixture1.m_userData == "die") {
-            //      body2.sprite.destroy();
-            //      sound = game.add.audio("lucky");
-            //      sound.play();
-            //      shotActive = false;
-            //  }
+
+         if (fixture2.m_userData == "die") {
+             body2.sprite.destroy();
+            //  sound = game.add.audio("lucky");
+            //  sound.play();
+         }
     }
-    }
+}
 
 // Function to check for intersection between a segment and a rectangle
 function lineIntersectsRectangle(l, r) {
