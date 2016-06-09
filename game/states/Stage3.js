@@ -118,14 +118,14 @@ Stage3.prototype = {
           if (barBody.y < 150) {
             barBody.velocity.y = (crateSpeed * 2);
           }
-          if (shots === 0) {
-          //game.state.start("Over");
-          //alert("Game over!");
-          statusText.text = "Game Over!";
-          //game.destroy();
-            console.log("you dead!!");
-          //  console.log("you dead!!");
-          }
+          // if (shots === 0) {
+          // //game.state.start("Over");
+          // //alert("Game over!");
+          // statusText.text = "Game Over!";
+          // //game.destroy();
+          //   console.log("you dead!!");
+          // //  console.log("you dead!!");
+          // }
      },
      balldie: function(){
        if (shots===0) {
@@ -195,7 +195,7 @@ function chargeball3(pointer, x, y, down){
 // function to launch the ball3
 function launchball3(){
 
-     bounces3 = 10;
+     bounces3 = 3;
      // adjusting callbacks
      game.input.deleteMoveCallback(0);
      game.input.onUp.remove(launchball3);
@@ -232,6 +232,16 @@ function hitCollision3(body1, body2, fixture1, fixture2, begin) {
       shotsText.text = 'Shots: ' + shots;
 
       var num = getRandomInt(1,3);
+
+      }
+      sound.play();
+      if (shots === 0) {
+        // game.state.start("Over");
+        shotActive = true;
+      statusText.text = "Game Over!";
+        console.log("you dead!!");
+      }
+      else {
       switch (num) {
         case 1:
               sound = game.add.audio("gig");
@@ -245,7 +255,6 @@ function hitCollision3(body1, body2, fixture1, fixture2, begin) {
         break;
 
       }
-      sound.play();
 
    }
 }
@@ -263,6 +272,8 @@ function ball3HitsCrate(body1, body2, fixture1, fixture2, begin){
                body1.restitution = 0;
                // now the ball3 looks for a contact category which does not exist, so we won't trigger anymore the contact with the sensor
                body1.setCategoryContactCallback(4, ball3HitsCrate);
+               bounces3 = 1000;
+               shotActive = true;
                console.log("Game won");
                 //game.state.start("Over");
             sound = game.add.audio('win');
